@@ -5,7 +5,7 @@ task :retrieve_event_ratio => :environment do
   require 'certified'
 
   # oauth_token = ENV["OATH_TOKEN"]
-  graph = Koala::Facebook::API.new("CAACEdEose0cBAF3sFDmOWZCCVljauEtVxdz7jZAQlvYXR29B9LMLK1h4hgpZCwt9bougeuGFDxkRiXDKEPWbeuwn7LpulO0sNx1ZAWsN2KiszoZAGdbqrxVXtte0FZByRYR9YJJuZBGmAJ8lnkmk6YLeKjIK9KTa9niu2ZC6YoZBZB4gZDZD")
+  graph = Koala::Facebook::API.new("CAACEdEose0cBAPCDunZCI2wApZB9hZBQlCJZClYrXLJbiBajmzFHdzDhAGZBKpf5002ndEvpoabqUN6Y8QTjpgHZBAE4binNLYSZCofzi8p9PiKoBdhDNhImhFEnsTNBmKQa1jks7fhuEUFG6oDk9jOeblCD2ZB1lUfqDWRpeGPwqwZDZD")
 
   all_events = graph.get_object("me?fields=id,name,events,friends.fields(events.limit(14).fields(id))")
   #puts all_events
