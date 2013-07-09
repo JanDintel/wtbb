@@ -5,7 +5,7 @@ task :retrieve_event_ratio => :environment do
   require 'certified'
 
   # oauth_token = ENV["OATH_TOKEN"]
-  graph = Koala::Facebook::API.new("CAACEdEose0cBAPCDunZCI2wApZB9hZBQlCJZClYrXLJbiBajmzFHdzDhAGZBKpf5002ndEvpoabqUN6Y8QTjpgHZBAE4binNLYSZCofzi8p9PiKoBdhDNhImhFEnsTNBmKQa1jks7fhuEUFG6oDk9jOeblCD2ZB1lUfqDWRpeGPwqwZDZD")
+  graph = Koala::Facebook::API.new("")
 
   all_events = graph.get_object("me?fields=id,name,events,friends.fields(events.limit(14).fields(id))")
   #puts all_events
@@ -20,19 +20,20 @@ task :retrieve_event_ratio => :environment do
     end
   end
 
-  top_events = []
+  attending_count = "200"
+  top_events = Hash.new {|id|}
   # De array all_event_ids worden de duplicaten uit gegooid en daarna in de loop each gesmeten 
   all_event_ids.uniq.each do |id|
-    event_count = graph.fql_query("SELECT attending_count<200 FROM event WHERE eid ="+id+"")
+    event_count = graph.fql_query("SELECT attending_count<"+attending_count+" FROM event WHERE eid ="+id+"")
     # the key 'anon' is op positie nul (0) in de array uit event_count
     next if event_count[0]["anon"] == false
     all_invited_people = graph.get_object("/"+id+"/attending?fields=name,id,rsvp_status,gender")
     # add event_id
     all_invited_people_with_event_id = all_invited_people.unshift(id)
     all_genders = all_invited_people_with_event_id.map {|h| h["gender"] }
-    x = all_genders.count("female").to_f / all_genders.count("male").to_f
-    top_events = x.round(1)
-    p top_events
+    female_to_male_ratio = all_genders.count("female").to_f / all_genders.count("male").to_f
+    top_events[id] = female_to_male_ratio.round(1)
   end
+  puts top_events.inspect
   puts "completed"
 end
