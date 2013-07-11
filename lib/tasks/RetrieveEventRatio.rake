@@ -5,7 +5,7 @@ task :retrieve_event_ratio => :environment do
   require 'certified'
 
   # oauth_token = ENV["OATH_TOKEN"]
-  graph = Koala::Facebook::API.new("")
+  graph = Koala::Facebook::API.new("CAACEdEose0cBAIwWO9xlM1spTA8KTG1gyqhKR6uAOUZA7gfFSwS1rYgBZCq2hznnrnbrARfqWym1WSe5ZBWbGsAZAZANpo7aFDKqfXovZCtxcyZB9EunzqFkkLPP3j7QMAgHhZALLf11ohQ56mkXnkU4Rx5QXoVESZBAZA7WdZAAtjKigZDZD")
 
   all_events = graph.get_object("me?fields=id,name,events,friends.fields(events.limit(14).fields(id))")
   #puts all_events
@@ -29,11 +29,16 @@ task :retrieve_event_ratio => :environment do
     next if event_count[0]["anon"] == false
     all_invited_people = graph.get_object("/"+id+"/attending?fields=name,id,rsvp_status,gender")
     # add event_id
+    next if all_invited_people.empty?
     all_invited_people_with_event_id = all_invited_people.unshift(id)
     all_genders = all_invited_people_with_event_id.map {|h| h["gender"] }
     female_to_male_ratio = all_genders.count("female").to_f / all_genders.count("male").to_f
+    female_to_male_ratio
     top_events[id] = female_to_male_ratio.round(1)
+    #x =  top_events.sort_by {|key,value| value}
+    #p x.inspect
   end
-  puts top_events.inspect
+  top_events.sort_by {|key,value| value}
+  p top_events
   puts "completed"
 end
